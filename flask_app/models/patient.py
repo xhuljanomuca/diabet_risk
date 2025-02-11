@@ -1,4 +1,4 @@
-from config.mysqlconnection import connectToMySQL
+from flask_app.config.mysqlconnection import connectToMySQL
 import datetime
 import re 
 from flask import flash
