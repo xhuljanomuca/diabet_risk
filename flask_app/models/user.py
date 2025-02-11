@@ -22,7 +22,7 @@ class User:
 
     @classmethod
     def get_user_by_email(cls, data):
-        query = 'SELECT * FROM doctors WHERE email= %(email)s;'
+        query = 'SELECT * FROM doctor WHERE email= %(email)s;'
         results = connectToMySQL(cls.db_name).query_db(query, data)
         if results:
             return results[0]
@@ -30,7 +30,7 @@ class User:
 
     @classmethod
     def get_user_by_id(cls, data):
-        query = 'SELECT * FROM doctors WHERE id= %(user_id)s;'
+        query = 'SELECT * FROM doctor WHERE id= %(user_id)s;'
         results = connectToMySQL(cls.db_name).query_db(query, data)
         if results:
             return results[0]
@@ -38,7 +38,7 @@ class User:
 
     @classmethod
     def get_all(cls):
-        query = "SELECT * FROM doctors;"
+        query = "SELECT * FROM doctor;"
         results = connectToMySQL(cls.db_name).query_db(query)
         users = []
         if results:
@@ -49,17 +49,17 @@ class User:
 
     @classmethod
     def create_user(cls, data):
-        query = "INSERT INTO doctors (first_name, last_name, email, password, medical_center, city) VALUES ( %(first_name)s, %(last_name)s,%(email)s,%(password)s, %(medical_center)s, %(city)s);"
+        query = "INSERT INTO doctor (first_name, last_name, email, password, medical_center, city, created_at) VALUES ( %(first_name)s, %(last_name)s,%(email)s,%(password)s, %(medical_center)s, %(city)s, now());"
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
     def update_user(cls, data):
-        query = "UPDATE doctors SET email = %(email)s, medical_center = %(medical_center)s, city = %(city)s WHERE id = %(user_id)s;"
+        query = "UPDATE doctor SET email = %(email)s, medical_center = %(medical_center)s, city = %(city)s WHERE id = %(user_id)s;"
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
     def delete_user(cls, data):
-        query = "DELETE FROM doctors WHERE id = %(user_id)s;"
+        query = "DELETE FROM doctor WHERE id = %(user_id)s;"
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
