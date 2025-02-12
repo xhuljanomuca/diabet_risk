@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Questionnaire - Step {{ step }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mt-4">Patient Questionnaire (Step {{ step }} of 15)</h2>
+
+        <form action="/add/patient/{{ step }}" method="post">
+            <div class="card p-4">   
+                    <label>What is your waist size?</label><br>
+                    <div class="form-check">
+                        <input type="radio" name="waist_size" value="Less than 94 cm (M) or 80 cm (F)" required> Less than 94 cm / 80 cm<br>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="waist_size" value="94–102 cm (M) or 80–88 cm (F)"> 94–102 cm / 80–88 cm<br>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" name="waist_size" value="Over 102 cm (M) or Over 88 cm (F)"> Over 102 cm / 88 cm<br>
+                    </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                {% if step > 1 %}
+                <a href="/add/patient/{{ step - 1 }}" class="btn btn-secondary">Previous</a>
+                {% endif %}
+                
+                <button type="submit" class="btn btn-primary" id="nextBtn" disabled>Next</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll('input[name="waist_size"]').forEach((radio) => {
+            radio.addEventListener("change", function() {
+                document.getElementById("nextBtn").disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>
