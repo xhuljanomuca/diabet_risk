@@ -119,8 +119,6 @@ def update_profile():
     return redirect('/profile')
 
 
-
-
 @app.route('/get_medical_centers/<int:city_id>')
 def get_medical_centers(city_id):
     data = {"city_id": city_id}
@@ -132,3 +130,27 @@ def get_medical_centers(city_id):
         return Response(json.dumps([]), mimetype='application/json')
 
     return Response(json.dumps(medical_centers), mimetype='application/json')
+
+
+@app.route('/show_risk_score')
+def show_risk_score():
+    if "risk_score" not in session:
+        return redirect('/profile')  # Redirect if no score exists
+
+    risk_score = session["risk_score"]
+
+    # Determine the risk category
+    if 0 <= risk_score <= 32:
+        risk_category = "Low to moderate risk"
+        risk_chance = "1–17% chance of being diagnosed with diabetes over the next 10 years."
+        alert_class = "alert-success"
+    elif 33 <= risk_score <= 42:
+        risk_category = "High risk"
+        risk_chance = "33% chance of being diagnosed with diabetes over the next 10 years."
+        alert_class = "alert-warning"
+    else:
+        risk_category = "Very high risk"
+        risk_chance = "50% chance of being diagnosed with diabetes over the next 10 years."
+        alert_class = "alert-danger"
+
+    return render_template("risk_score_result.html", risk_score=risk_score, risk_category=risk_category, risk_chance=risk_chance, alert_class=alert_class)

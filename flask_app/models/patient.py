@@ -50,7 +50,7 @@ class Patient:
 
     @classmethod
     def create_patient_questionnaire(cls, data):
-        query = "INSERT INTO patient_questionnaire (gender, age, waist_size, bmi, physical_activity, fruit_vegetable_intake, high_blood_presure, high_sugar_pressure, pregnancy_large_baby, mother_diabetes, father_diabetes, siblings_diabetes, children_diabetes, ethnicity, education_level, risk_score, doctor_id) VALUES (%(gender)s, %(age)s, %(waist_size)s, %(bmi)s, %(physical_activity)s, %(fruit_vegetable_intake)s, %(high_blood_pressure)s, %(high_sugar_pressure)s, %(pregnancy_large_baby)s, %(mother_diabetes)s, %(father_diabetes)s, %(siblings_diabetes)s, %(children_diabetes)s, %(ethnicity)s, %(education_level)s, %(risk_score)s, %(doctor_id)s);"
+        query = "INSERT INTO patient_questionnaire (gender, age, waist_size, bmi, physical_activity, fruit_vegetable_intake, high_blood_pressure, high_sugar_pressure, pregnancy_large_baby, mother_diabetes, father_diabetes, siblings_diabetes, children_diabetes, ethnicity, education_level, risk_score, doctor_id, created_at, medical_center_id) VALUES (%(gender)s, %(age)s, %(waist_size)s, %(bmi)s, %(physical_activity)s, %(fruit_vegetable_intake)s, %(high_blood_pressure)s, %(high_sugar_pressure)s, %(pregnancy_large_baby)s, %(mother_diabetes)s, %(father_diabetes)s, %(siblings_diabetes)s, %(children_diabetes)s, %(ethnicity)s, %(education_level)s, %(risk_score)s, %(doctor_id)s, now(), %(medical_center_id)s);"
         return connectToMySQL(cls.db_name).query_db(query, data)
     
 

@@ -13,24 +13,43 @@
         <form action="/add/patient/{{ step }}" method="post">
             <div class="card p-4">   
                 <label>What is your BMI?</label><br>
+
+                <div class="mb-3">
+                    <label for="weight" class="form-label">Enter your weight (kg):</label>
+                    <input type="number" id="weight" class="form-control" step="0.1" min="30" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="height" class="form-label">Enter your height (m):</label>
+                    <input type="number" id="height" class="form-control" step="0.01" min="1" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Calculated BMI:</label>
+                    <input type="text" id="bmi_value" class="form-control" readonly>
+                </div>
+
+                <input type="hidden" id="bmi_hidden">
+
+                <p class="fw-bold">Your BMI category:</p>
                 <div class="form-check">
                     <input type="radio" id="bmi1" name="bmi" value="Less than 25" class="form-check-input" required>
-                    <label for="bmi1" class="form-check-label">Less than 25</label>
+                    <label for="bmi1" class="form-check-label">Less than 25 - Normal</label>
                 </div>
 
                 <div class="form-check">
                     <input type="radio" id="bmi2" name="bmi" value="25 to 29" class="form-check-input">
-                    <label for="bmi2" class="form-check-label">25 to 29</label>
+                    <label for="bmi2" class="form-check-label">25 to 29 - Overweight</label>
                 </div>
 
                 <div class="form-check">
                     <input type="radio" id="bmi3" name="bmi" value="30 to 34" class="form-check-input">
-                    <label for="bmi3" class="form-check-label">30 to 34</label>
+                    <label for="bmi3" class="form-check-label">30 to 34 - Obese</label>
                 </div>
 
                 <div class="form-check">
                     <input type="radio" id="bmi4" name="bmi" value="35 and over" class="form-check-input">
-                    <label for="bmi4" class="form-check-label">35 and over</label>
+                    <label for="bmi4" class="form-check-label">35 and over - Severely Obese</label>
                 </div>
             </div>
             
@@ -50,6 +69,34 @@
                 document.getElementById("nextBtn").disabled = false;
             });
         });
+    </script>
+    <script>
+        function calculateBMI() {
+            let weight = parseFloat(document.getElementById("weight").value);
+            let height = parseFloat(document.getElementById("height").value);
+
+            if (weight > 0 && height > 0) {
+                let bmi = weight / (height * height);
+                let bmiFixed = bmi.toFixed(2);
+
+                // Set calculated BMI value
+                document.getElementById("bmi_value").value = bmiFixed;
+                document.getElementById("bmi_hidden").value = bmiFixed;
+                
+                // Auto-select the correct BMI category
+                document.getElementById("bmi1").checked = (bmi < 25);
+                document.getElementById("bmi2").checked = (bmi >= 25 && bmi < 30);
+                document.getElementById("bmi3").checked = (bmi >= 30 && bmi < 35);
+                document.getElementById("bmi4").checked = (bmi >= 35);
+                
+                // Enable Next button
+                document.getElementById("nextBtn").disabled = false;
+            }
+        }
+
+        // Listen for height and weight input changes
+        document.getElementById("weight").addEventListener("input", calculateBMI);
+        document.getElementById("height").addEventListener("input", calculateBMI);
     </script>
 </body>
 </html>

@@ -43,43 +43,32 @@
             <th scope="col">Ethnicity</th>
             <th scope="col">Education Level</th>
             <th scope="col">Risk Score</th>
-            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
             {% for patient in patients %}
           <tr>
-            <td>{{patient.gender}}</td>
-            <td>{{patient.age}}</td>
-            <td>{{patient.bmi}}</td>
-            <td>{{patient.waist_size}}</td>
-            <td>{{patient.physical_activity}}</td>
-            <td>{{patient.fruit_vegetable_intake}}</td>
-            <td>{{patient.high_blood_pressure}}</td>
-            <td>{{patient.high_sugar_pressure}}</td>
-            <td>{{patient.pregnancy_large_baby}}</td>
-            <td>{{patient.mother_diabetes}}</td>
-            <td>{{patient.father_diabetes}}</td>
-            <td>{{patient.siblings_diabetes}}</td>
-            <td>{{patient.children_diabetes}}</td>
-            <td>{{patient.ethnicity}}</td>
-            <td>{{patient.education_level}}</td>
-            <td>{{patient.risk_score}}</td>
-            <td>
-              <a href="/patients/{{patient.id}}" class="btn btn-outline-primary">View</a>
-              {% if car.users_id == loggedUser.id %}
-              <a href="/patients/edit/{{patient.id}}" class="btn btn-outline-danger">Edit</a>
-              <a href="/patients/delete/{{patient.id}}" class="btn btn-outline-danger">Delete</a>
-              {% endif %}
-            </td>
+            <td>{{ patient.gender }}</td>
+            <td>{{ patient.age }}</td>
+            <td>{{ patient.bmi }}</td>
+            <td>{{ patient.waist_size }}</td>
+            <td>{{ patient.physical_activity }}</td>
+            <td>{{ patient.fruit_vegetable_intake }}</td>
+            <td>{{ patient.high_blood_pressure }}</td>
+            <td>{{ patient.high_sugar_pressure }}</td>
+            <td>{{ patient.pregnancy_large_baby }}</td>
+            <td>{{ patient.mother_diabetes }}</td>
+            <td>{{ patient.father_diabetes }}</td>
+            <td>{{ patient.siblings_diabetes }}</td>
+            <td>{{ patient.children_diabetes }}</td>
+            <td>{{ patient.ethnicity }}</td>
+            <td>{{ patient.education_level }}</td>
+            <td>{{ patient["risk_score"] }}</td>
           </tr>
           {% endfor %}
           
         </tbody>
       </table>
-    <div class="text-end w-75 m-auto mt-3">
-      <a href="/users/purchases" class="btn btn-sm btn-info">My Patients</a>
-    </div>
     
 </body>
 </html>
