@@ -1,5 +1,6 @@
 from flask_app import app
-from flask import render_template, redirect, session, request, flash
+from flask import render_template, redirect, session, request, flash, Response
+import json
 from flask_app.models.user import User
 from flask_app.models.patient import Patient
 from flask_bcrypt import Bcrypt
@@ -9,7 +10,7 @@ bcrypt = Bcrypt(app)
 @app.route('/')
 def index():
     if 'user_id' in session:
-        return redirect('/profil') 
+        return redirect('/profile') 
     return redirect('/logout') 
 
 
@@ -39,7 +40,8 @@ def login():
 def registerPage():
     if 'user_id' in session:
         return redirect('/')
-    return render_template('register.html')
+    cities = User.get_all_cities()
+    return render_template('register.html', cities=cities)
 
 
 @app.route('/register', methods=['POST'])
@@ -59,8 +61,7 @@ def register():
         'last_name': request.form['last_name'],
         'email': request.form['email'],
         'password': bcrypt.generate_password_hash(request.form['password']),
-        'medical_center': request.form['medical_center'],
-        'city': request.form['city'],
+        'medical_center_id': request.form['medical_center_id'],
         'confirm_password': request.form['confirm_password']
     }
     User.create_user(data)
@@ -68,7 +69,7 @@ def register():
     return redirect('/')
 
 
-@app.route('/profil')
+@app.route('/profile')
 def patients():
     if 'user_id' not in session:
         return redirect('/')
@@ -79,10 +80,55 @@ def patients():
     patients = User.getDoctorPatients(loggedUserData)
     if not loggedUser:
         return redirect('/logout')
-    return render_template('profil.html', loggedUser=User.get_user_by_id(loggedUserData), patients=Patient.get_all())
+    return render_template('profile.html', loggedUser=User.get_user_by_id(loggedUserData), patients=Patient.get_all())
 
 
 @app.route('/logout')
 def logout():
     session.clear() 
     return redirect('/loginPage')
+
+
+@app.route('/edit_profile')
+def edit_profile():
+    if 'user_id' not in session:
+        return redirect('/loginPage')
+
+    loggedUserData = {'user_id': session['user_id']}
+    loggedUser = User.get_user_by_id(loggedUserData)
+    
+    cities = User.get_all_cities()
+    medical_centers = User.get_medical_centers_by_city({"city_id": loggedUser["city_id"]})
+
+    return render_template('edit_profile.html', loggedUser=loggedUser, cities=cities, medical_centers=medical_centers)
+
+
+@app.route('/update_profile', methods=['POST'])
+def update_profile():
+    if 'user_id' not in session:
+        return redirect('/loginPage')
+
+    data = {
+        "doctor_id": session['user_id'],
+        "medical_center_id": request.form['medical_center_id']
+    }
+
+    User.editDoctorProfile(data)
+    flash("Profile updated successfully!", "success")
+
+    return redirect('/profile')
+
+
+
+
+@app.route('/get_medical_centers/<int:city_id>')
+def get_medical_centers(city_id):
+    data = {"city_id": city_id}
+    medical_centers = User.get_medical_centers_by_city(data)
+
+    print(f"Fetched Medical Centers: {medical_centers}")
+
+    if not medical_centers:
+        return Response(json.dumps([]), mimetype='application/json')
+
+    return Response(json.dumps(medical_centers), mimetype='application/json')

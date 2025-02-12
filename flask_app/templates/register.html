@@ -44,27 +44,22 @@
             {% endif %}
             {% endwith %}
             <div class="mb-3">
-                <label for="medical_center" class="form-label">Medical Center</label>
-                <input type="text" class="form-control" name="medical_center">
-            </div>
-            {% with messages = get_flashed_messages(category_filter=["medical_center"]) %}
-            {% if messages %}
-            {% for message in messages %}
-            <p class="text-danger text-center">{{message}}</p>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-            <div class="mb-3">
                 <label for="city" class="form-label">City</label>
-                <input type="text" class="form-control" name="city">
+                <select class="form-control" name="city" id="city">
+                    <option value="">Select a city</option>
+                    {% for city in cities %}
+                    <option value="{{ city.id }}">{{ city.city }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            {% with messages = get_flashed_messages(category_filter=["city"]) %}
-            {% if messages %}
-            {% for message in messages %}
-            <p class="text-danger text-center">{{message}}</p>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
+            
+            <div class="mb-3">
+                <label for="medical_center" class="form-label">Medical Center</label>
+                <select class="form-control" name="medical_center_id" id="medical_center">
+                    <option value="">Select a medical center</option>
+                </select>
+            </div>
+            
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" name="password">
@@ -93,5 +88,34 @@
         </form>
         <a class="d-flex justify-content-center" href="/loginPage"><button class="btn btn-primary">Already have an account? Login!</button></a>
     
+        <script>
+            document.getElementById("city").addEventListener("change", function() {
+            var cityId = parseInt(this.value, 10);
+            var medicalCenterDropdown = document.getElementById("medical_center");
+
+            // Clear previous options
+            medicalCenterDropdown.innerHTML = '<option value="">Select a medical center</option>';
+
+            if (cityId) {
+                fetch(`/get_medical_centers/${cityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Received Data:", data);
+                        
+                        if (!Array.isArray(data)) {
+                            console.error("Invalid response format:", data);
+                            return;
+                        }
+                        data.forEach(center => {
+                            let option = document.createElement("option");
+                            option.value = center.id;
+                            option.textContent = center.medical_center;
+                            medicalCenterDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error("Error fetching medical centers:", error));
+            }
+            });
+        </script>
 </body>
 </html>

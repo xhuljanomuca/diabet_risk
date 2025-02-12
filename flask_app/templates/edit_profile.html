@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <h1 class="text-center mt-2 pt-3">Edit Profile</h1>
+    
+    <form action="/update_profile" method="post" class="w-50 m-auto p-3">
+        <input type="hidden" name="doctor_id" value="{{ loggedUser.id }}">
+
+        <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <select class="form-control" name="city" id="city">
+                {% for city in cities %}
+                <option value="{{ city.id }}" {% if city.id == loggedUser.city_id %}selected{% endif %}>{{ city.city }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="medical_center" class="form-label">Medical Center</label>
+            <select class="form-control" name="medical_center_id" id="medical_center">
+                {% for center in medical_centers %}
+                <option value="{{ center.id }}" {% if center.id == loggedUser.medical_center_id %}selected{% endif %}>{{ center.medical_center }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="/profile" class="btn btn-secondary">Cancel</a>
+    </form>
+
+    <script>
+    document.getElementById("city").addEventListener("change", function() {
+        var cityId = parseInt(this.value, 10);
+        var medicalCenterDropdown = document.getElementById("medical_center");
+
+        medicalCenterDropdown.innerHTML = '<option value="">Select a medical center</option>';
+
+        if (cityId) {
+            fetch(`/get_medical_centers/${cityId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(center => {
+                        let option = document.createElement("option");
+                        option.value = center.id;
+                        option.textContent = center.medical_center;
+                        medicalCenterDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => console.error("Error fetching medical centers:", error));
+        }
+    });
+    </script>
+
+</body>
+</html>

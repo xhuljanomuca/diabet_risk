@@ -13,8 +13,7 @@ class User:
         self.last_name = data['last_name']
         self.email = data['email']
         self.password = data['password']
-        self.medical_center = data['medical_center']
-        self.city = data['city']
+        self.medical_center = data['medical_center_id']
         self.created_at = data['created_at']
 
 
@@ -30,7 +29,7 @@ class User:
 
     @classmethod
     def get_user_by_id(cls, data):
-        query = 'SELECT * FROM doctor WHERE id= %(user_id)s;'
+        query = 'SELECT doctor.*, medical_center.id as medical_center_id, medical_center.medical_center AS medical_center_name, city.id as city_id, city.city AS city_name FROM doctor LEFT JOIN medical_center ON doctor.medical_center_id = medical_center.id LEFT JOIN city ON medical_center.city_id = city.id WHERE doctor.id= %(user_id)s;'
         results = connectToMySQL(cls.db_name).query_db(query, data)
         if results:
             return results[0]
@@ -49,13 +48,14 @@ class User:
 
     @classmethod
     def create_user(cls, data):
-        query = "INSERT INTO doctor (first_name, last_name, email, password, medical_center, city, created_at) VALUES ( %(first_name)s, %(last_name)s,%(email)s,%(password)s, %(medical_center)s, %(city)s, now());"
+        query = "INSERT INTO doctor (first_name, last_name, email, password, medical_center_id, created_at) VALUES ( %(first_name)s, %(last_name)s,%(email)s,%(password)s, %(medical_center_id)s, now());"
         return connectToMySQL(cls.db_name).query_db(query, data)
 
     @classmethod
-    def update_user(cls, data):
-        query = "UPDATE doctor SET email = %(email)s, medical_center = %(medical_center)s, city = %(city)s WHERE id = %(user_id)s;"
+    def editDoctorProfile(cls, data):
+        query = "UPDATE doctor SET medical_center_id = %(medical_center_id)s WHERE id = %(doctor_id)s;"
         return connectToMySQL(cls.db_name).query_db(query, data)
+
 
     @classmethod
     def delete_user(cls, data):
@@ -64,7 +64,7 @@ class User:
 
     @classmethod
     def getDoctorPatients(cls, data):
-        query = "SELECT patient_questionnaires.id as id from patient_questionnaire where doctor_id = %(user_id)s;"
+        query = "SELECT patient_questionnaire.id as id from patient_questionnaire where doctor_id = %(user_id)s;"
         results = connectToMySQL(cls.db_name).query_db(query, data)
         patients = []
         if results:
@@ -99,10 +99,26 @@ class User:
         if not EMAIL_REGEX.match(user['email']):
             flash("Invalid email address!", 'emailSignUp')
             is_valid = False
-        if len(user['medical_center']) < 2:
-            flash('Medical center must be more than 2 characters', 'medicalCenter')
-            is_valid = False
-        if len(user['city']) < 2:
-            flash('City must be more than 2 characters', 'city')
-            is_valid = False
         return is_valid
+    
+
+    @classmethod
+    def get_all_cities(cls):
+        query = "SELECT * FROM city;"
+        return connectToMySQL(cls.db_name).query_db(query)
+
+    @classmethod
+    def get_medical_centers_by_city(cls, data):
+        query = "SELECT id, medical_center FROM medical_center WHERE city_id = %(city_id)s;"
+        
+        print(f"Running Query: {query} with city_id={data['city_id']}")
+        
+        results = connectToMySQL(cls.db_name).query_db(query, data)
+
+        print(f"Query Results: {results}")
+
+        if not results:
+            return []
+
+        return results
+
