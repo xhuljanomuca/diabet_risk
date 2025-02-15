@@ -10,23 +10,28 @@
     <div class="container">
         <h2 class="text-center mt-4">Patient Questionnaire (Step {{ step }} of 15)</h2>
 
-        <form action="/add/patient/{{ step }}" method="post">
+        <form action="{{ url_for('patient_questionnaire', step=step, redirect=request.args.get('redirect', '')) }}" method="post">
+
             <div class="card p-4">   
                 <h3>How old are you?</h3>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="age" value="18-44" id="18-44" required>
+                    <!-- {% if saved_answer and saved_answer.get("age") == "18-44" %} checked {% endif %}> -->
                     <label class="form-check-label" for="18-44">18-44</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="age" value="45-54" id="45-54" required>
+                    <!-- {% if saved_answer and saved_answer.get("age") == "45-54" %} checked {% endif %}> -->
                     <label class="form-check-label" for="45-54">45-54</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="age" value="45-54" id="45-54" required>
+                    <!-- {% if saved_answer and saved_answer.get("age") == "45-54" %} checked {% endif %}> -->
                     <label class="form-check-label" for="45-54">55-64</label>
                 </div>
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="age" value="45-54" id="45-54" required>
+                    <!-- {% if saved_answer and saved_answer.get("age") == "45-54" %} checked {% endif %}> -->
                     <label class="form-check-label" for="45-54">65-74</label>
                 </div>
             </div>

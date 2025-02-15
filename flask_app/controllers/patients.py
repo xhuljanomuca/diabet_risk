@@ -1,36 +1,39 @@
 from flask_app import app
-from flask import render_template, redirect, request, session, flash
+from flask import render_template, redirect, request, session, url_for, flash
 from flask_app.models.patient import Patient
 from flask_app.models.user import User
 
-TOTAL_QUESTIONS = 15  # Update based on actual number of questions
+TOTAL_QUESTIONS = 15
 
 @app.route('/add/patient')
 def start_questionnaire():
-    session["questionnaire"] = {}  # Reset session data
+    session["questionnaire"] = {}
     return redirect('/add/patient/1')
 
 
 @app.route('/add/patient/<int:step>', methods=['GET', 'POST'])
 def patient_questionnaire(step):
     session.permanent = True 
-    # Ensure session exists
     if "questionnaire" not in session:
-        session["questionnaire"] = {}  # Initialize session
+        session["questionnaire"] = {}
 
     if request.method == "POST":
-        # Store current question's answer
         session["questionnaire"][f"q{step}"] = request.form.to_dict()
+        session.modified = True
 
         print(f"Saved answer for Q{step}: {session['questionnaire'][f'q{step}']}")
+        print(f"Request URL: {request.url}")
+        print(f"Redirect Parameter: {request.args.get('redirect')}")
 
-        # Move to next question (unless it's the last one)
+        if "redirect" in request.args and request.args.get("redirect") == "review":
+            print("Redirecting back to the review page after editing...")
+            return redirect(url_for("review_questionnaire"))
+
         if step < 15:
-            return redirect(f'/add/patient/{step + 1}')
+            return redirect(url_for("patient_questionnaire", step=step + 1))
         else:
-            return redirect('/submit_questionnaire')  # Final submission
+            return redirect(url_for("review_questionnaire"))
 
-    # Retrieve previous answer (if any) for this step
     saved_answers = session["questionnaire"].get(f"q{step}", {})
 
     return render_template(f'question_{step}.html', step=step, saved_answers=saved_answers)
@@ -46,14 +49,12 @@ def submit_questionnaire():
         print("Error: `session['questionnaire']` is missing!")
         return redirect('/add/patient/1')
 
-    # Check if all 15 answers are present
     if len(session["questionnaire"]) != 15:
         flash("Incomplete questionnaire! Please answer all questions.", "error")
         print(f"Error: Session contains only {len(session['questionnaire'])} questions instead of 15.")
         print(f"Session data: {session.get('questionnaire')}")
         return redirect('/add/patient/1')
 
-    #Log session data before clearing it
     print(f"Session data before submission: {session['questionnaire']}")
 
     if "user_id" not in session:
@@ -61,7 +62,6 @@ def submit_questionnaire():
         print("Error: User not logged in!")
         return redirect('/loginPage')
 
-    # Retrieve the logged-in doctor's details
     loggedUserData = {"user_id": session["user_id"]}
     loggedUser = User.get_user_by_id(loggedUserData)
 
@@ -70,7 +70,7 @@ def submit_questionnaire():
         print("Error: Logged user not found!")
         return redirect('/loginPage')
 
-    medical_center_id = loggedUser.get("medical_center_id")  # Ensure it exists
+    medical_center_id = loggedUser.get("medical_center_id")
 
     # **Mapping of Points for Each Option**
     points_mapping = {
@@ -103,9 +103,9 @@ def submit_questionnaire():
         question_data = session["questionnaire"].get(f"q{step}", {})
 
         for key, value in question_data.items():
-            data[key] = value  # Store selected answer
+            data[key] = value
             if key in points_mapping and value in points_mapping[key]:
-                total_score += points_mapping[key][value]  # Add risk points
+                total_score += points_mapping[key][value]
 
     data["risk_score"] = total_score
     data["doctor_id"] = session["user_id"]
@@ -113,7 +113,6 @@ def submit_questionnaire():
 
     print(f"Inserting Patient Questionnaire Data: {data}")
 
-    # Save to database
     result = Patient.create_patient_questionnaire(data)
 
     if not result:
@@ -121,7 +120,6 @@ def submit_questionnaire():
         print("Error: Database insertion failed!")
         return redirect('/add/patient/1')
 
-    # Ensure session is only cleared AFTER successful database insertion
     session.pop("questionnaire", None)
     session["risk_score"] = total_score
 
@@ -131,4 +129,58 @@ def submit_questionnaire():
     flash(f"Patient questionnaire submitted successfully! Risk Score: {total_score}", "success")
     
     return redirect('/show_risk_score')
+
+
+@app.route('/review_questionnaire')
+def review_questionnaire():
+    if "questionnaire" not in session:
+        flash("Please complete the questionnaire first.", "error")
+        return redirect('/add/patient/1')
+
+    saved_answers = session["questionnaire"]
+
+    question_labels = {
+        "q1": "Gender",
+        "q2": "Age",
+        "q3": "BMI",
+        "q4": "Waist Size",
+        "q5": "Physical Activity",
+        "q6": "Fruit and Vegetable Intake",
+        "q7": "High Blood Pressure",
+        "q8": "High Sugar Pressure",
+        "q9": "Pregnancy Large Baby",
+        "q10": "Mother Diabetes",
+        "q11": "Father Diabetes",
+        "q12": "Siblings Diabetes",
+        "q13": "Children Diabetes",
+        "q14": "Ethnicity",
+        "q15": "Education Level",
+    }
+
+    return render_template(
+        'review_questionnaire.html', 
+        saved_answers=saved_answers, 
+        question_labels=question_labels
+    )
+
+
+
+@app.route('/save_answer/<int:step>', methods=['POST'])
+def save_answer(step):
+    if "questionnaire" not in session:
+        session["questionnaire"] = {}
+
+    session["questionnaire"][f"q{step}"] = request.form.to_dict()
+    session.modified = True
+
+    print(f"Saved answer for Q{step}: {session['questionnaire'][f'q{step}']}")
+
+    if request.args.get("redirect") == "review":
+        return redirect("/review_questionnaire")
+
+    if step < 15:
+        return redirect(f"/add/patient/{step + 1}")
+    else:
+        return redirect("/review_questionnaire")
+
 

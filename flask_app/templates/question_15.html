@@ -10,7 +10,7 @@
     <div class="container">
         <h2 class="text-center mt-4">Patient Questionnaire (Step {{ step }} of 15)</h2>
 
-        <form action="/add/patient/{{ step }}" method="post">
+        <form id="question15Form" action="/save_answer/15" method="post">
             <div class="card p-4">   
                 <label>What is the highest level of education that you have completed?</label><br>
                 <select name="education_level" required>
@@ -28,8 +28,9 @@
                 {% endif %}
                 
                 <a href="/cancel_questionnaire" class="btn btn-danger">Cancel</a>
-                
+
                 <button type="submit" class="btn btn-primary" id="nextBtn" disabled>Next</button>
+                
             </div>
         </form>
     </div>
@@ -38,6 +39,17 @@
         document.querySelectorAll('select[name="education_level"]').forEach((radio) => {
             radio.addEventListener("change", function() {
                 document.getElementById("nextBtn").disabled = false;
+            });
+        });
+
+        document.getElementById("question15Form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            fetch(this.action, {
+                method: "POST",
+                body: new FormData(this)
+            }).then(() => {
+                window.location.href = "/review_questionnaire"; // Redirect to review page
             });
         });
     </script>

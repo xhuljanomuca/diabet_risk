@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Your Answers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center mt-4">Review Your Answers</h2>
+
+        <div class="card p-4">
+            <h4 class="mb-3">Please review your answers before submitting.</h4>
+            <ul class="list-group">
+                {% for key, label in question_labels.items() %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <strong>{{ key }} - {{ label }}:</strong>
+                        <span class="text-success">
+                            {% if saved_answers and key in saved_answers %}
+                                {{ saved_answers[key].values() | list | join(", ") }}
+                            {% else %}
+                                <span class="text-danger">No answer selected</span>
+                            {% endif %}
+                        </span>
+                        <a href="{{ url_for('patient_questionnaire', step=key[1:], redirect='review') }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="/add/patient/15" class="btn btn-secondary">Previous</a>
+
+            <a href="/cancel_questionnaire" class="btn btn-danger">Cancel</a>
+            
+            <!-- Submit form when button is clicked -->
+            <form id="submitForm" action="/submit_questionnaire" method="post">
+                <button type="submit" class="btn btn-success">Submit Questionnaire</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -14,11 +14,13 @@
             <div class="card p-4">
                 <h3>Are you male or female?</h3>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" value="Male" id="male" required>
+                    <input class="form-check-input" type="radio" name="gender" value="Male" id="male" required
+                    {% if saved_answer and saved_answer.get("gender") == "Male" %} checked {% endif %}>
                     <label class="form-check-label" for="male">Male</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" value="Female" id="female" required>
+                    <input class="form-check-input" type="radio" name="gender" value="Female" id="female" required
+                    {% if saved_answer and saved_answer.get("gender") == "Female" %} checked {% endif %}>
                     <label class="form-check-label" for="female">Female</label>
                 </div>
             </div>

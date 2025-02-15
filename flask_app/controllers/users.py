@@ -158,6 +158,6 @@ def show_risk_score():
 
 @app.route('/cancel_questionnaire')
 def cancel_questionnaire():
-    session.pop("questionnaire", None)  # Clear the questionnaire session
-    flash("Patient questionnaire was canceled.", "warning")  # Flash message
-    return redirect('/profile')  # Redirect back to the profile page
+    session.pop("questionnaire", None)
+    flash("Patient questionnaire was canceled.", "warning")
+    return redirect('/profile') 
