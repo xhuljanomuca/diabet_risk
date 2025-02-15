@@ -133,11 +133,11 @@ def submit_questionnaire():
 
 @app.route('/review_questionnaire')
 def review_questionnaire():
-    if "questionnaire" not in session:
+    if "questionnaire" not in session or not session["questionnaire"]:
         flash("Please complete the questionnaire first.", "error")
         return redirect('/add/patient/1')
 
-    saved_answers = session["questionnaire"]
+    #saved_answers = session["questionnaire"]
 
     question_labels = {
         "q1": "Gender",
@@ -159,7 +159,7 @@ def review_questionnaire():
 
     return render_template(
         'review_questionnaire.html', 
-        saved_answers=saved_answers, 
+        saved_answers=session["questionnaire"],
         question_labels=question_labels
     )
 
