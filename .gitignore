@@ -1,0 +1,5 @@
+__pycache__/
+flask_app/__pycache__/
+flask_app/config/__pycache__/
+flask_app/controllers/__pycache__/
+flask_app/models/__pycache__/

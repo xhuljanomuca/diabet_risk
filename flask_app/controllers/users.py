@@ -154,3 +154,10 @@ def show_risk_score():
         alert_class = "alert-danger"
 
     return render_template("risk_score_result.html", risk_score=risk_score, risk_category=risk_category, risk_chance=risk_chance, alert_class=alert_class)
+
+
+@app.route('/cancel_questionnaire')
+def cancel_questionnaire():
+    session.pop("questionnaire", None)  # Clear the questionnaire session
+    flash("Patient questionnaire was canceled.", "warning")  # Flash message
+    return redirect('/profile')  # Redirect back to the profile page
