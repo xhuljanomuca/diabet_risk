@@ -10,7 +10,7 @@
     <div class="container">
         <h2 class="text-center mt-4">Patient Questionnaire (Step {{ step }} of 15)</h2>
 
-        <form action="/add/patient/{{ step }}" method="post">
+        <form action="{{ url_for('patient_questionnaire', step=step, redirect=request.args.get('redirect', '')) }}" method="post">
             <div class="card p-4">   
                 <label>How often do you eat vegetables or fruits?</label><br>
                 <div class="form-check">

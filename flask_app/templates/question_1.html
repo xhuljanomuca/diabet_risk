@@ -10,17 +10,15 @@
     <div class="container">
         <h2 class="text-center mt-4">Patient Questionnaire (Step {{ step }} of 15)</h2>
 
-        <form action="/add/patient/{{ step }}" method="post">
+        <form action="{{ url_for('patient_questionnaire', step=step, redirect=request.args.get('redirect', '')) }}" method="post">
             <div class="card p-4">
                 <h3>Are you male or female?</h3>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" value="Male" id="male" required
-                    {% if saved_answer and saved_answer.get("gender") == "Male" %} checked {% endif %}>
+                    <input class="form-check-input" type="radio" name="gender" value="Male" id="male" required>
                     <label class="form-check-label" for="male">Male</label>
                 </div>
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="gender" value="Female" id="female" required
-                    {% if saved_answer and saved_answer.get("gender") == "Female" %} checked {% endif %}>
+                    <input class="form-check-input" type="radio" name="gender" value="Female" id="female" required>
                     <label class="form-check-label" for="female">Female</label>
                 </div>
             </div>
