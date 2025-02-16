@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Questionnaire - Step {{ step }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .info-box {
+            display: none;
+            border-left: 5px solid #007bff;
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -53,6 +62,11 @@
                     <label for="bmi4" class="form-check-label">35 and over - Severely Obese</label>
                 </div>
             </div>
+
+            <div id="infoBox" class="info-box">
+                <strong>Did you know...</strong>
+                <p id="infoText">Being overweight or obese increases your risk of developing diabetes. The more overweight you are, the higher your risk.</p>
+            </div>
             
             <div class="d-flex justify-content-between mt-4">
                 {% if step > 1 %}
@@ -67,9 +81,16 @@
     </div>
 
     <script>
-        document.querySelectorAll('input[name="bmi"]').forEach((radio) => {
-            radio.addEventListener("change", function() {
-                document.getElementById("nextBtn").disabled = false;
+        document.addEventListener("DOMContentLoaded", function () {
+            let radioButtons = document.querySelectorAll('input[name="bmi"]');
+            let nextButton = document.getElementById("nextBtn");
+            let infoBox = document.getElementById("infoBox");
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener("change", function () {
+                    nextButton.disabled = false;  // Enable Next button
+                    infoBox.style.display = "block"; // Show the info box
+                });
             });
         });
     </script>
@@ -77,6 +98,8 @@
         function calculateBMI() {
             let weight = parseFloat(document.getElementById("weight").value);
             let height = parseFloat(document.getElementById("height").value);
+            let infoBox = document.getElementById("infoBox"); 
+            let nextButton = document.getElementById("nextBtn");
 
             if (weight > 0 && height > 0) {
                 let bmi = weight / (height * height);
@@ -87,19 +110,28 @@
                 document.getElementById("bmi_hidden").value = bmiFixed;
                 
                 // Auto-select the correct BMI category
-                document.getElementById("bmi1").checked = (bmi < 25);
-                document.getElementById("bmi2").checked = (bmi >= 25 && bmi < 30);
-                document.getElementById("bmi3").checked = (bmi >= 30 && bmi < 35);
-                document.getElementById("bmi4").checked = (bmi >= 35);
-                
-                // Enable Next button
-                document.getElementById("nextBtn").disabled = false;
+                let selectedRadio;
+                if (bmi < 25) selectedRadio = document.getElementById("bmi1");
+                else if (bmi >= 25 && bmi < 30) selectedRadio = document.getElementById("bmi2");
+                else if (bmi >= 30 && bmi < 35) selectedRadio = document.getElementById("bmi3");
+                else selectedRadio = document.getElementById("bmi4");
+
+                if (selectedRadio) {
+                    selectedRadio.checked = true;
+
+                    let event = new Event("change", { bubbles: true });
+                    selectedRadio.dispatchEvent(event);
+                }
+
+                nextButton.disabled = false;
+
+                infoBox.style.display = "block";
             }
         }
 
-        // Listen for height and weight input changes
         document.getElementById("weight").addEventListener("input", calculateBMI);
         document.getElementById("height").addEventListener("input", calculateBMI);
+
     </script>
 </body>
 </html>

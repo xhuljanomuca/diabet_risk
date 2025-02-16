@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Questionnaire - Step {{ step }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .info-box {
+            display: none;
+            border-left: 5px solid #007bff;
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -21,6 +30,11 @@
                 </div>
             </div>
 
+            <div id="infoBox" class="info-box">
+                <strong>Did you know...</strong>
+                <p id="infoText">Giving birth to a large infant over 9 pounds (4.1 kg) is related to high maternal weight gain during pregnancy and/or gestational diabetes.</p>
+            </div>
+
             <div class="d-flex justify-content-between mt-4">
                 {% if step > 1 %}
                 <a href="/add/patient/{{ step - 1 }}" class="btn btn-secondary">Previous</a>
@@ -34,9 +48,16 @@
     </div>
 
     <script>
-        document.querySelectorAll('input[name="pregnancy_large_baby"]').forEach((radio) => {
-            radio.addEventListener("change", function() {
-                document.getElementById("nextBtn").disabled = false;
+        document.addEventListener("DOMContentLoaded", function () {
+            let radioButtons = document.querySelectorAll('input[name="pregnancy_large_baby"]');
+            let nextButton = document.getElementById("nextBtn");
+            let infoBox = document.getElementById("infoBox");
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener("change", function () {
+                    nextButton.disabled = false;  // Enable Next button
+                    infoBox.style.display = "block"; // Show the info box
+                });
             });
         });
     </script>

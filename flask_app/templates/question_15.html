@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Questionnaire - Step {{ step }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .info-box {
+            display: none;
+            border-left: 5px solid #007bff;
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -22,6 +31,14 @@
                 </select>
             </div>
 
+            <div id="infoBox" class="info-box">
+                <strong>Did you know...</strong>
+                <p id="infoText">How education relates to healthy living?
+                    An individual's health status improves with level of education.
+                    Education improves people's ability to access and understand information to help keep them healthy.
+                    Education is closely tied to socioeconomic status, and effective education for children and lifelong learning for adults are key contributors to health.</p>
+            </div>
+
             <div class="d-flex justify-content-between mt-4">
                 {% if step > 1 %}
                 <a href="/add/patient/{{ step - 1 }}" class="btn btn-secondary">Previous</a>
@@ -36,9 +53,16 @@
     </div>
 
     <script>
-        document.querySelectorAll('select[name="education_level"]').forEach((radio) => {
-            radio.addEventListener("change", function() {
-                document.getElementById("nextBtn").disabled = false;
+        document.addEventListener("DOMContentLoaded", function () {
+            let radioButtons = document.querySelectorAll('select[name="education_level"]');
+            let nextButton = document.getElementById("nextBtn");
+            let infoBox = document.getElementById("infoBox");
+    
+            radioButtons.forEach(radio => {
+                radio.addEventListener("change", function () {
+                    nextButton.disabled = false;  // Enable Next button
+                    infoBox.style.display = "block"; // Show the info box
+                });
             });
         });
 
