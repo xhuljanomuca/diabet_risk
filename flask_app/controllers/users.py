@@ -72,15 +72,17 @@ def register():
 @app.route('/profile')
 def patients():
     if 'user_id' not in session:
-        return redirect('/')
-    loggedUserData = {
-        'user_id': session['user_id']
-    }
+        return redirect('/loginPage')
+
+    loggedUserData = {'user_id': session['user_id']}
     loggedUser = User.get_user_by_id(loggedUserData)
-    patients = User.getDoctorPatients(loggedUserData)
+
     if not loggedUser:
         return redirect('/logout')
-    return render_template('profile.html', loggedUser=User.get_user_by_id(loggedUserData), patients=Patient.get_all())
+
+    patients = Patient.get_all({"doctor_id": session["user_id"]})
+
+    return render_template('profile.html', loggedUser=loggedUser, patients=patients)
 
 
 @app.route('/logout')

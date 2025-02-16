@@ -64,36 +64,25 @@ class User:
 
     @classmethod
     def getDoctorPatients(cls, data):
-        query = """SELECT 
-            patient_questionnaire.id,
-            patient_questionnaire.gender,
-            patient_questionnaire.age,
-            patient_questionnaire.bmi,
-            patient_questionnaire.waist_size,
-            patient_questionnaire.physical_activity,
-            patient_questionnaire.fruit_vegetable_intake,
-            patient_questionnaire.high_blood_pressure,
-            patient_questionnaire.high_sugar_pressure,
-            patient_questionnaire.pregnancy_large_baby,
-            patient_questionnaire.mother_diabetes,
-            patient_questionnaire.father_diabetes,
-            patient_questionnaire.siblings_diabetes,
-            patient_questionnaire.children_diabetes,
-            patient_questionnaire.ethnicity,
-            patient_questionnaire.education_level,
-            patient_questionnaire.risk_score,
-            doctor.first_name as doctor_first_name,
-            doctor.last_name as doctor_last_name
-        FROM patient_questionnaire
-        LEFT JOIN doctor ON patient_questionnaire.doctor_id = doctor.id
-        WHERE patient_questionnaire.doctor_id = %(user_id)s;"""
-        
+        query = """
+            SELECT patient_questionnaire.id, patient_questionnaire.gender, patient_questionnaire.age, 
+                patient_questionnaire.bmi, patient_questionnaire.waist_size, 
+                patient_questionnaire.physical_activity, patient_questionnaire.fruit_vegetable_intake, 
+                patient_questionnaire.high_blood_pressure, patient_questionnaire.high_sugar_pressure, 
+                patient_questionnaire.pregnancy_large_baby, patient_questionnaire.mother_diabetes, 
+                patient_questionnaire.father_diabetes, patient_questionnaire.siblings_diabetes, 
+                patient_questionnaire.children_diabetes, patient_questionnaire.ethnicity, 
+                patient_questionnaire.education_level, patient_questionnaire.risk_score, 
+                doctor.first_name as doctor_first_name, doctor.last_name as doctor_last_name 
+            FROM patient_questionnaire 
+            LEFT JOIN doctor ON patient_questionnaire.doctor_id = doctor.id 
+            WHERE patient_questionnaire.doctor_id = %(doctor_id)s;
+        """
         results = connectToMySQL(cls.db_name).query_db(query, data)
         patients = []
         if results:
             for patient in results:
                 patients.append(patient['id'])
-            return patients
         return patients
 
     @staticmethod
